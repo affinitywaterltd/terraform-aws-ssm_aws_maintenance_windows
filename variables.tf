@@ -14,6 +14,12 @@ variable "region" {
   default     = "eu-west-1"
 }
 
+
+variable "role" {
+  description = "Role used by SSM"
+  default     = "null"
+}
+
 variable "s3_bucket" {
   description = "S3 bucket for loggin"
   default     = "aw-ssm-logs"

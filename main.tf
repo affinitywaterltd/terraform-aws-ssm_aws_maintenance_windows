@@ -30,7 +30,7 @@ resource "aws_ssm_maintenance_window_task" "default_task1" {
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-ConfigureAWSPackage"
   priority         = 10
-  service_role_arn = "arn:aws:iam::707746943384:role/aws-service-role/ssm.amazonaws.com/AWSServiceRoleForAmazonSSM"
+  service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
@@ -68,7 +68,7 @@ resource "aws_ssm_maintenance_window_task" "default_task2" {
   task_type        = "RUN_COMMAND"
   task_arn         = "AWSEC2-CreateVssSnapshot"
   priority         = 20
-  service_role_arn = "arn:aws:iam::707746943384:role/aws-service-role/ssm.amazonaws.com/AWSServiceRoleForAmazonSSM"
+  service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
@@ -113,7 +113,7 @@ resource "aws_ssm_maintenance_window_task" "default_task3" {
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-InstallWindowsUpdates"
   priority         = 30
-  service_role_arn = "arn:aws:iam::707746943384:role/aws-service-role/ssm.amazonaws.com/AWSServiceRoleForAmazonSSM"
+  service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
@@ -162,7 +162,7 @@ resource "aws_ssm_maintenance_window_task" "default_task4" {
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-UpdateSSMAgent"
   priority         = 40
-  service_role_arn = "arn:aws:iam::707746943384:role/aws-service-role/ssm.amazonaws.com/AWSServiceRoleForAmazonSSM"
+  service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
