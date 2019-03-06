@@ -48,7 +48,7 @@ variable "mw_error_rate" {
 
 variable "type" {
   description = "Maintenance Window Type (aws or vm)"
-  default     = "unnamed"
+  default     = "aws"
 }
 
 variable "weeks" {
