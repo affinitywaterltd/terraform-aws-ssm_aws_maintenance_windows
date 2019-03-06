@@ -17,7 +17,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
 
   targets {
     key    = "tag:ssmMaintenanceWindow"
-    values = ["${var.type}_week-${var.week}_${var.day}_${var.hour}00"]
+    values = ["${var.type}_week-${count.index+1}_${var.day}_${var.hour}00"]
   }
 }
 
