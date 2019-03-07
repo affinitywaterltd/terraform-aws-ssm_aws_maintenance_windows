@@ -108,11 +108,44 @@ resource "aws_ssm_maintenance_window_task" "default_task2" {
 resource "aws_ssm_maintenance_window_task" "default_task3" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
+  name             = "AWS-UpdateSSMAgent"
+  description      = "Update SSM Agent"
+  task_type        = "RUN_COMMAND"
+  task_arn         = "AWS-UpdateSSMAgent"
+  priority         = 30
+  service_role_arn = "${var.role}"
+  max_concurrency  = "${var.mw_concurrency}"
+  max_errors       = "${var.mw_error_rate}"
+
+  logging_info {
+      s3_bucket_name = "${var.s3_bucket}"
+      s3_region = "${var.region}"
+      s3_bucket_prefix = "${var.account}-${var.environment}"
+  }
+
+  targets {
+    key    = "WindowTargetIds"
+    values = ["${element(aws_ssm_maintenance_window.default.*.id, count.index)}"]
+  }
+
+  task_parameters {
+    name   = "allowDowngrade"
+    values = ["false"]
+  }
+
+  lifecycle {
+    ignore_changes = ["task_parameters"]
+  }
+}
+
+resource "aws_ssm_maintenance_window_task" "default_task4" {
+  count            = "${var.weeks}"
+  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   name             = "AWS-InstallWindowsUpdates"
   description      = "Install Windows Updates"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-InstallWindowsUpdates"
-  priority         = 30
+  priority         = 40
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -147,39 +180,6 @@ resource "aws_ssm_maintenance_window_task" "default_task3" {
   task_parameters {
     name   = "PublishedDaysOld"
     values = ["7"]
-  }
-
-  lifecycle {
-    ignore_changes = ["task_parameters"]
-  }
-}
-
-resource "aws_ssm_maintenance_window_task" "default_task4" {
-  count            = "${var.weeks}"
-  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "AWS-UpdateSSMAgent"
-  description      = "Update SSM Agent"
-  task_type        = "RUN_COMMAND"
-  task_arn         = "AWS-UpdateSSMAgent"
-  priority         = 40
-  service_role_arn = "${var.role}"
-  max_concurrency  = "${var.mw_concurrency}"
-  max_errors       = "${var.mw_error_rate}"
-
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.account}-${var.environment}"
-  }
-
-  targets {
-    key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window.default.*.id, count.index)}"]
-  }
-
-  task_parameters {
-    name   = "allowDowngrade"
-    values = ["false"]
   }
 
   lifecycle {
