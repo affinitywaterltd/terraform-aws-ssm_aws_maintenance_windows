@@ -19,7 +19,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
     key    = "tag:ssmMaintenanceWindow"
     values = ["${var.type}_week-${count.index+1}_${var.day}_${var.hour}00"]
   }
-  depends_on = ["${aws_ssm_maintenance_window.default}"]
+  depends_on = ["${element(aws_ssm_maintenance_window.default.*.id, count.index)}"]
 }
 
 
