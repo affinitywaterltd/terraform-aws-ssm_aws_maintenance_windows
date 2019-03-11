@@ -42,7 +42,7 @@ resource "aws_ssm_maintenance_window_task" "default_task1" {
 
   targets {
     key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window.default.*.id, count.index)}"]
+    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
   task_parameters {
@@ -80,7 +80,7 @@ resource "aws_ssm_maintenance_window_task" "default_task2" {
 
   targets {
     key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window.default.*.id, count.index)}"]
+    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
   task_parameters {
@@ -125,7 +125,7 @@ resource "aws_ssm_maintenance_window_task" "default_task3" {
 
   targets {
     key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window.default.*.id, count.index)}"]
+    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
   task_parameters {
@@ -158,7 +158,7 @@ resource "aws_ssm_maintenance_window_task" "default_task4" {
 
   targets {
     key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window.default.*.id, count.index)}"]
+    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
   task_parameters {
