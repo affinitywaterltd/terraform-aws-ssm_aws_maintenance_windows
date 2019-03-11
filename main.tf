@@ -10,7 +10,7 @@ resource "aws_ssm_maintenance_window" "default" {
 
 resource "aws_ssm_maintenance_window_target" "default" {
   count         = "${var.weeks}"
-  window_id     = "${element(aws_ssm_maintenance_window.default, count.index)}"
+  window_id     = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   
   resource_type = "INSTANCE"
   
@@ -19,7 +19,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
     key    = "tag:ssmMaintenanceWindow"
     values = ["${var.type}_week-${count.index+1}_${var.day}_${var.hour}00"]
   }
-  depends_on = ["${element(aws_ssm_maintenance_window.default.*.id, count.index)}"]
+  depends_on = ["${element(aws_ssm_maintenance_window.default, count.index)}"]
 }
 
 
