@@ -7,7 +7,7 @@ resource "aws_ssm_maintenance_window" "default" {
   schedule_timezone = "Europe/London"
 }
 
-/*
+
 resource "aws_ssm_maintenance_window_target" "default" {
   count         = "${var.weeks}"
   window_id     = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
@@ -185,4 +185,4 @@ resource "aws_ssm_maintenance_window_task" "default_task4" {
   lifecycle {
     ignore_changes = ["task_parameters"]
   }
-}*/
+}
