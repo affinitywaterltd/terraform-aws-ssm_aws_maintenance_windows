@@ -21,15 +21,38 @@ resource "aws_ssm_maintenance_window_target" "default" {
   }
 }
 
+resource "aws_ssm_maintenance_window_task" "default_task_enable" {
+  count            = "${var.weeks}"
+  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
+  name             = "AWL-EnableUpdateServices"
+  description      = "Sets Windows Update Service (wuauserv) to manual and starts service."
+  task_type        = "RUN_COMMAND"
+  task_arn         = "AWL-EnableUpdateServices"
+  priority         = 10
+  service_role_arn = "${var.role}"
+  max_concurrency  = "${var.mw_concurrency}"
+  max_errors       = "${var.mw_error_rate}"
 
-resource "aws_ssm_maintenance_window_task" "default_task1" {
+  logging_info {
+      s3_bucket_name = "${var.s3_bucket}"
+      s3_region = "${var.region}"
+      s3_bucket_prefix = "${var.account}-${var.environment}"
+  }
+
+  targets {
+    key    = "WindowTargetIds"
+    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
+  }
+}
+
+resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   name             = "AWS-ConfigureAWSPackage"
   description      = "Installs AwsVssComponents for snapshotting"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-ConfigureAWSPackage"
-  priority         = 10
+  priority         = 20
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -60,14 +83,14 @@ resource "aws_ssm_maintenance_window_task" "default_task1" {
 }
 
 
-resource "aws_ssm_maintenance_window_task" "default_task2" {
+resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   name             = "AWL-TakeAWSVssSnapshot"
   description      = "Take Snapshot of instance"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWL-TakeAWSVssSnapshot"
-  priority         = 20
+  priority         = 30
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -105,14 +128,14 @@ resource "aws_ssm_maintenance_window_task" "default_task2" {
   }
 }
 
-resource "aws_ssm_maintenance_window_task" "default_task3" {
+resource "aws_ssm_maintenance_window_task" "default_task_ssmagent" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   name             = "AWS-UpdateSSMAgent"
   description      = "Update SSM Agent"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-UpdateSSMAgent"
-  priority         = 30
+  priority         = 40
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -138,14 +161,14 @@ resource "aws_ssm_maintenance_window_task" "default_task3" {
   }
 }
 
-resource "aws_ssm_maintenance_window_task" "default_task4" {
+resource "aws_ssm_maintenance_window_task" "default_task_updates" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   name             = "AWS-InstallWindowsUpdates"
   description      = "Install Windows Updates"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-InstallWindowsUpdates"
-  priority         = 40
+  priority         = 50
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -184,5 +207,29 @@ resource "aws_ssm_maintenance_window_task" "default_task4" {
 
   lifecycle {
     ignore_changes = ["task_parameters"]
+  }
+}
+
+resource "aws_ssm_maintenance_window_task" "default_task_disable" {
+  count            = "${var.weeks}"
+  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
+  name             = "AWL-DisableUpdateServices"
+  description      = "Sets Windows Update Service (wuauserv) to disable and stops service."
+  task_type        = "RUN_COMMAND"
+  task_arn         = "AWL-DisableUpdateServices"
+  priority         = 60
+  service_role_arn = "${var.role}"
+  max_concurrency  = "${var.mw_concurrency}"
+  max_errors       = "${var.mw_error_rate}"
+
+  logging_info {
+      s3_bucket_name = "${var.s3_bucket}"
+      s3_region = "${var.region}"
+      s3_bucket_prefix = "${var.account}-${var.environment}"
+  }
+
+  targets {
+    key    = "WindowTargetIds"
+    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 }
