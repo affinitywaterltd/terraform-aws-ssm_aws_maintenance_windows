@@ -63,10 +63,10 @@ resource "aws_ssm_maintenance_window_task" "default_task1" {
 resource "aws_ssm_maintenance_window_task" "default_task2" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "AWSEC2-CreateVssSnapshot"
+  name             = "AWL-TakeAWSVssSnapshot"
   description      = "Take Snapshot of instance"
   task_type        = "RUN_COMMAND"
-  task_arn         = "AWSEC2-CreateVssSnapshot"
+  task_arn         = "AWL-TakeAWSVssSnapshot"
   priority         = 20
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
