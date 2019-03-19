@@ -67,3 +67,23 @@ variable "hour" {
   description = "Maintenance Window Hour (00-23)"
   default     = "unnamed"
 }
+
+variable "powershell_package_file" {
+  description = "File location to install powershell module"
+  default     = "null"
+}
+
+variable "powershell_package_patameters" {
+  description = "Parameters to install powershell module"
+  default     = "/quiet"
+}
+
+variable "powershell_package_file_before" {
+  description = "File location to install powershell module"
+  default     = "null"
+}
+
+variable "powershell_package_patameters_before" {
+  description = "Parameters to install powershell module"
+  default     = "/qn"
+}
