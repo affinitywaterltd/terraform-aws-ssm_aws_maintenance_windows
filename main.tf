@@ -23,7 +23,7 @@ resource "aws_ssm_maintenance_window_target" "pre" {
 resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
-  name             = "Enable WSUS"
+  name             = "enable_wsus"
   description      = "Enable Windows Update Service"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-RunPowerShellScript"
@@ -52,7 +52,7 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
 resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
-  name             = "Install Powershell v3"
+  name             = "install_powershell_v3"
   description      = "Installs Powershell v3 Update Package"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-RunPowerShellScript"
@@ -112,7 +112,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
 resource "aws_ssm_maintenance_window_task" "default_task_awss_tooks_install" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "Install AWS Tools for Windows"
+  name             = "install_aws_tools_for_windows"
   description      = "Install AWS Tools for Windows"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-InstallApplication"
@@ -147,7 +147,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_awss_tooks_install" {
 resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "Enable WSUS"
+  name             = "enable_wsus"
   description      = "Sets Windows Update Service (wuauserv) to manual and starts service."
   task_type        = "RUN_COMMAND"
   task_arn         = "AWL-EnableUpdateServices"
@@ -171,7 +171,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
 resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "Install AWS VSS"
+  name             = "install_aws_vss"
   description      = "Installs AwsVssComponents for snapshotting"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-ConfigureAWSPackage"
@@ -209,7 +209,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
 resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "Take Snapshot"
+  name             = "take_snapshot"
   description      = "Take Snapshot of instance"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWL-TakeAWSVssSnapshot"
@@ -254,7 +254,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
 resource "aws_ssm_maintenance_window_task" "default_task_ssmagent" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "Update SSM Agent"
+  name             = "update_ssm_agent"
   description      = "Update SSM Agent"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-UpdateSSMAgent"
@@ -287,7 +287,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_ssmagent" {
 resource "aws_ssm_maintenance_window_task" "default_task_updates" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "Install Windows Updates"
+  name             = "install_windows_updates"
   description      = "Install Windows Updates"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-InstallWindowsUpdates"
@@ -336,7 +336,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
 resource "aws_ssm_maintenance_window_task" "default_task_disable" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "Disable WSUS"
+  name             = "disable_wsus"
   description      = "Sets Windows Update Service (wuauserv) to disable and stops service."
   task_type        = "RUN_COMMAND"
   task_arn         = "AWL-DisableUpdateServices"
