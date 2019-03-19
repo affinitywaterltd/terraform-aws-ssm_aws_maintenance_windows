@@ -15,8 +15,8 @@ resource "aws_ssm_maintenance_window_target" "pre" {
   resource_type = "INSTANCE"
   
   targets {
-    key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window_target.pre.*.id, count.index)}"]
+    key    = "tag:ssmMaintenanceWindow"
+    values = ["${var.type}_week-${count.index+1}_${var.day}_${var.hour}00"]
   }
 }
 
