@@ -15,8 +15,8 @@ resource "aws_ssm_maintenance_window_target" "pre" {
   resource_type = "INSTANCE"
   
   targets {
-    key    = "InstanceIds"
-    values = ["${element(var.mi_list, count.index)}"]
+    key    = "WindowTargetIds"
+    values = ["${element(aws_ssm_maintenance_window_target.pre.*.id, count.index)}"]
   }
 }
 
@@ -109,7 +109,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
   }
 }
 
-resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
+resource "aws_ssm_maintenance_window_task" "default_task_awss_tooks_install" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   name             = "Install AWS Tools for Windows"
