@@ -338,14 +338,14 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
   }
 }
 
-resource "aws_ssm_maintenance_window_task" "default_task_disable" {
+resource "aws_ssm_maintenance_window_task" "default_task_disble" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   name             = "disable_wsus"
-  description      = "Sets Windows Update Service (wuauserv) to disable and stops service."
+  description      = "Reset Windows Update Service"
   task_type        = "RUN_COMMAND"
-  task_arn         = "AWL-DisableUpdateServices"
-  priority         = 60
+  task_arn         = "AWS-RunPowerShellScript"
+  priority         = 10
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -359,5 +359,10 @@ resource "aws_ssm_maintenance_window_task" "default_task_disable" {
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
+  }
+
+  task_parameters {
+    name   = "commands"
+    values = ["Stop-Service -Name 'wuauserv'","Set-Service -Name 'wuauserv' -StartupType Disabled"]
   }
 }
