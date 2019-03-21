@@ -209,7 +209,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
 resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "take_snapshot"
+  name             = "take_aws_snapshot"
   description      = "Take Snapshot of instance"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWL-TakeAWSVssSnapshot"
