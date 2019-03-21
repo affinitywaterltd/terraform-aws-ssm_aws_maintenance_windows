@@ -147,10 +147,10 @@ resource "aws_ssm_maintenance_window_task" "default_task_awss_tooks_install" {
 resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "enable_wsus"
-  description      = "Sets Windows Update Service (wuauserv) to manual and starts service."
+  name             = "reset_wsus"
+  description      = "Reset Windows Update Service"
   task_type        = "RUN_COMMAND"
-  task_arn         = "AWL-EnableUpdateServices"
+  task_arn         = "AWS-RunPowerShellScript"
   priority         = 10
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
@@ -165,6 +165,11 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
+  }
+
+  task_parameters {
+    name   = "commands"
+    values = ["Stop-Service -Name 'wuauserv'","Remove-Item -Path 'C:\\Windows\\SoftwareDistribution' -Recurse","Set-Service -Name 'wuauserv' -StartupType Manual","Start-Service -Name 'wuauserv'"]
   }
 }
 
