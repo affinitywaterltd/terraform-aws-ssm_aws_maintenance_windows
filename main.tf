@@ -109,7 +109,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
   }
 }
 
-resource "aws_ssm_maintenance_window_task" "default_task_awss_tooks_install" {
+resource "aws_ssm_maintenance_window_task" "default_task_aws_tools_install" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   name             = "install_aws_tools_for_windows"
