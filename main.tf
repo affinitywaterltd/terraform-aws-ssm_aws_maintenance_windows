@@ -345,7 +345,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_disble" {
   description      = "Reset Windows Update Service"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-RunPowerShellScript"
-  priority         = 10
+  priority         = 60
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
