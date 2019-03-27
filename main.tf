@@ -1,9 +1,7 @@
 
 resource "aws_ssm_maintenance_window" "pre" {
   count    = "${var.weeks}"
-  #name     = "pre_${var.type}_week-${count.index+1}_${var.day}_${var.hour}00_testval${var.testval}"
   name = "${var.weeks > 1 ? "pre_${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "pre_${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"
-  #schedule = "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)"
   schedule = "${var.weeks > 1 ? "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)" : "cron(00 ${var.hour} ? 1/3 ${var.day}#${var.week} *)"}"
   duration = "${var.mw_duration}"
   cutoff   = "${var.mw_cutoff}"
@@ -18,7 +16,7 @@ resource "aws_ssm_maintenance_window_target" "pre" {
   
   targets {
     key    = "tag:ssmMaintenanceWindow"
-    values = ["${var.type}_week-${count.index+1}_${var.day}_${var.hour}00"]
+    values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
   }
 }
 
@@ -37,7 +35,7 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
   }
 
   targets {
@@ -66,7 +64,7 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
   }
 
   targets {
@@ -90,8 +88,8 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
 
 resource "aws_ssm_maintenance_window" "default" {
   count    = "${var.weeks}"
-  name     = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00"
-  schedule = "cron(30 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)"
+  name     = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"
+  schedule = "${var.weeks > 1 ? "cron(30 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)" : "cron(30 ${var.hour} ? 1/3 ${var.day}#${var.week} *)"}"
   duration = "${var.mw_duration}"
   cutoff   = "${var.mw_cutoff}"
   schedule_timezone = "Europe/London"
@@ -107,7 +105,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
 
   targets {
     key    = "tag:ssmMaintenanceWindow"
-    values = ["${var.type}_week-${count.index+1}_${var.day}_${var.hour}00"]
+    values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
   }
 }
 
@@ -126,7 +124,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_aws_tools_install" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
   }
 
   targets {
@@ -161,7 +159,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
   }
 
   targets {
@@ -190,7 +188,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
   }
 
   targets {
@@ -228,7 +226,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
   }
 
   targets {
@@ -273,7 +271,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_ssmagent" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
   }
 
   targets {
@@ -306,7 +304,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
   }
 
   targets {
@@ -355,7 +353,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_disble" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
   }
 
   targets {
