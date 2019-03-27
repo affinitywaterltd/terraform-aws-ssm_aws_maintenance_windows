@@ -57,7 +57,7 @@ variable "weeks" {
 }
 variable "week" {
   description = "Maintenance Window Week (1-4)"
-  default     = "unnamed"
+  default     = "1"
 }
 variable "day" {
   description = "Maintenance Window Day (mon-sun)"
