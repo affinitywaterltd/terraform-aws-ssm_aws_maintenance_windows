@@ -1,7 +1,12 @@
 
+variable "testval" {
+    default = "${var.weeks == "1" ? var.week : 0}"
+}
+
+
 resource "aws_ssm_maintenance_window" "pre" {
   count    = "${var.weeks}"
-  testval = "${var.weeks == "1" ? var.week : 0}"
+
   name     = "pre_${var.type}_week-${count.index+1}_${var.day}_${var.hour}00_testval${var.testval}"
   schedule = "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)"
   duration = "${var.mw_duration}"
