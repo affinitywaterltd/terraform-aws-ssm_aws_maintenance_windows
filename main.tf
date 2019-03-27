@@ -2,9 +2,9 @@
 resource "aws_ssm_maintenance_window" "pre" {
   count    = "${var.weeks}"
   #name     = "pre_${var.type}_week-${count.index+1}_${var.day}_${var.hour}00_testval${var.testval}"
-  name = "${var.weeks == 1 ? "pre_${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "pre_${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"
+  name = "${var.weeks > 1 ? "pre_${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "pre_${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"
   #schedule = "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)"
-  schedule = "${var.weeks == 1 ? "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)" : "cron(00 ${var.hour} ? 1/3 ${var.day}#${var.week} *)"}"
+  schedule = "${var.weeks > 1 ? "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)" : "cron(00 ${var.hour} ? 1/3 ${var.day}#${var.week} *)"}"
   duration = "${var.mw_duration}"
   cutoff   = "${var.mw_cutoff}"
   schedule_timezone = "Europe/London"
