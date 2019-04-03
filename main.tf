@@ -3,7 +3,7 @@ resource "aws_ssm_maintenance_window" "pre" {
   count    = "${var.weeks}"
   name = "${var.weeks > 1 ? "pre_${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "pre_${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"
   schedule = "${var.weeks > 1 ? "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)" : "cron(00 ${var.hour} ? 1/3 ${var.day}#${var.week} *)"}"
-  duration = "${var.mw_duration}"
+  duration = "1"
   cutoff   = "${var.mw_cutoff}"
   schedule_timezone = "Europe/London"
 }
@@ -47,6 +47,10 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
     name   = "commands"
     values = ["Set-Service -Name 'wuauserv' -StartupType Manual","Start-Service -Name 'wuauserv'"]
   }
+  task_parameters {
+    name   = "executionTimeout"
+    values = "300"
+  }
 }
 
 resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
@@ -75,6 +79,10 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
   task_parameters {
     name   = "commands"
     values = ["wusa.exe  /i ${var.powershell_package_file} ${var.powershell_package_patameters}"]
+  }
+  task_parameters {
+    name   = "executionTimeout"
+    values = "900"
   }
 }
 
@@ -132,16 +140,14 @@ resource "aws_ssm_maintenance_window_task" "default_task_aws_tools_install" {
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
-
   task_parameters {
     name   = "source"
     values = ["${var.powershell_package_file_before}"]
-  } 
+  }
   task_parameters {
     name   = "parameters"
     values = ["${var.powershell_package_patameters_before}"]
   } 
-
 }
 
 resource "aws_ssm_maintenance_window_task" "default_task_enable" {
@@ -170,6 +176,10 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   task_parameters {
     name   = "commands"
     values = ["Stop-Service -Name 'wuauserv'","Remove-Item -Path 'C:\\Windows\\SoftwareDistribution' -Recurse","Set-Service -Name 'wuauserv' -StartupType Manual","Start-Service -Name 'wuauserv'"]
+  }
+  task_parameters {
+    name   = "executionTimeout"
+    values = "300"
   }
 }
 
@@ -364,5 +374,9 @@ resource "aws_ssm_maintenance_window_task" "default_task_disble" {
   task_parameters {
     name   = "commands"
     values = ["Stop-Service -Name 'wuauserv'","Set-Service -Name 'wuauserv' -StartupType Disabled"]
+  }
+  task_parameters {
+    name   = "executionTimeout"
+    values = "300"
   }
 }
