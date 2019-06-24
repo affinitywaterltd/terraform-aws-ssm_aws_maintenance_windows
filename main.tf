@@ -1,6 +1,6 @@
 #
 #
-# Update Window - 30mins past
+# Update Window
 #
 #
 resource "aws_ssm_maintenance_window" "default" {
@@ -22,6 +22,35 @@ resource "aws_ssm_maintenance_window_target" "default" {
 
   targets {
     key    = "tag:ssmMaintenanceWindow"
+    values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
+  }
+}
+
+resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances" {
+  count            = "${var.weeks}"
+  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
+  name             = "start_stopped_instances"
+  description      = "Start instances that are stopped"
+  task_type        = "AUTOMATION"
+  task_arn         = "AWL-StartStoppedInstances"
+  priority         = 1
+  service_role_arn = "${var.role}"
+  max_concurrency  = "${var.mw_concurrency}"
+  max_errors       = "${var.mw_error_rate}"
+
+  logging_info {
+      s3_bucket_name = "${var.s3_bucket}"
+      s3_region = "${var.region}"
+      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+  }
+
+  targets {
+    key    = "WindowTargetIds"
+    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
+  }
+
+  task_parameters {
+    name   = "Value"
     values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
   }
 }
