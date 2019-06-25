@@ -49,9 +49,13 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
-  task_parameters {
-    name   = "TagValue"
-    values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
+  TaskInvocationParameters {
+    Automation {
+      Parameters {
+        Name = "TagValue"
+        Value = "TestValue"
+      }
+    }
   }
 }
 
