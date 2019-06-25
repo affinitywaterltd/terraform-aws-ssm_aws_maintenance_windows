@@ -48,15 +48,6 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
-
-  TaskInvocationParameters {
-    Automation {
-      Parameters {
-        Name = "TagValue"
-        Value = "TestValue"
-      }
-    }
-  }
 }
 
 resource "aws_ssm_maintenance_window_task" "default_task_aws_tools_install" {
