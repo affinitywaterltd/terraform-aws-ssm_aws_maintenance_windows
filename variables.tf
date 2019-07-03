@@ -1,4 +1,10 @@
+data "terraform_remote_state" "core" {
+  backend = "atlas"
 
+  config {
+    name = "AffinityWater/${var.account}-core-${var.environment}"
+  }
+}
 variable "account" {
   description = "Code for account, defined in TFE (e.g apps)"
   default     = "wholesale"
@@ -87,3 +93,5 @@ variable "powershell_package_patameters_before" {
   description = "Parameters to install powershell module"
   default     = "/qn"
 }
+
+
