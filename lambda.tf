@@ -1,5 +1,5 @@
 
-/*
+
 ### Snapshot Cleanup
 
 resource "aws_lambda_function" "auto_daily_mw_snapshot_cleanup" {
@@ -41,4 +41,3 @@ resource "aws_cloudwatch_event_rule" "schedule_daily" {
   
 }
 
-*/
