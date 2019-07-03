@@ -1,8 +1,5 @@
 
 
-variable "cloudwatch_rule_name" {}
-variable "cloudwatch_rule_arn" {}
-
 ### Snapshot Cleanup
 
 resource "aws_lambda_function" "auto_daily_mw_snapshot_cleanup" {
@@ -27,7 +24,7 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.auto_daily_mw_snapshot_cleanup.function_name}"
   principal     = "events.amazonaws.com"
-  source_arn    = "${var.cloudwatch_rule_arn}"
+  source_arn    = "${aws_cloudwatch_event_rule.schedule_daily.arn}"
 }
 
 # Attach Cloudwatch event to lambda function
@@ -63,7 +60,7 @@ resource "aws_iam_role" "lambda_snapshot_cleanup_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_readonly_policy_attach" {
-  role       = "${aws_iam_role.lambda_reporting_role.name}"
+  role       = "${aws_iam_role.lambda_snapshot_cleanup_role.name}"
   policy_arn = "${aws_iam_policy.ec2_cleanup_snapshot.arn}"
 }
 
