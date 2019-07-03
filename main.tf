@@ -25,7 +25,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
     values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
   }
 }
-
+/*
 resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
@@ -49,6 +49,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 }
+*/
 
 resource "aws_ssm_maintenance_window_task" "default_task_aws_tools_install" {
   count            = "${var.weeks}"
@@ -190,7 +191,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
   }
   task_parameters {
     name   = "tags"
-    values = ["Key=Name,Value=SSM_Patching_Snapshot-${element(aws_ssm_maintenance_window.default.*.name, count.index)}"]
+    values = ["Key=Name,Value=SSM_Patching_Snapshot-${element(aws_ssm_maintenance_window.default.*.name, count.index)};Key=CreatedBy,Value=MaintenanceWindow"]
   }
 
   lifecycle {
