@@ -37,7 +37,7 @@ resource "aws_cloudwatch_event_target" "auto_daily_mw_snapshot_cleanup" {
 resource "aws_cloudwatch_event_rule" "schedule_daily" {
   name        = "schedule_daily"
   description = "Runs daily"
-  schedule_expression = "cron(0 1 * * * *)"
+  schedule_expression = "cron(0 1 * * ? *)"
   
 }
 
@@ -54,7 +54,7 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
 }
 
 resource "aws_iam_role" "lambda_snapshot_cleanup_role" {
-  name = "Lambda_Reporting"
+  name = "lambda-snapshot-cleanup-role"
 
   assume_role_policy = "${data.aws_iam_policy_document.lambda_assume_role_policy.json}"
 }
