@@ -1,4 +1,4 @@
-
+/*
 
 ### Snapshot Cleanup
 
@@ -41,3 +41,4 @@ resource "aws_cloudwatch_event_rule" "schedule_daily" {
   
 }
 
+*/
