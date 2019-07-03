@@ -31,7 +31,7 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
 resource "aws_cloudwatch_event_target" "auto_daily_mw_snapshot_cleanup" {
   target_id = "auto_daily_mw_snapshot_cleanup"
   arn = "${aws_lambda_function.auto_daily_mw_snapshot_cleanup.arn}"
-  rule = "${aws_cloudwatch_event_rule.schedule_daily.arn}"
+  rule = "${aws_cloudwatch_event_rule.schedule_daily.name}"
 }
 
 resource "aws_cloudwatch_event_rule" "schedule_daily" {
