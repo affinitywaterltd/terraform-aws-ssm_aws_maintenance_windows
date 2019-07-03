@@ -65,7 +65,7 @@ resource "aws_iam_role_policy_attachment" "lambda_readonly_policy_attach" {
 }
 
 resource "aws_iam_policy" "ec2_cleanup_snapshot" {
-  name = "EC2Snapshot"
+  name = "ec2-cleanup-snapshot"
   policy = <<EOF
 {
     "Version": "2012-10-17",
