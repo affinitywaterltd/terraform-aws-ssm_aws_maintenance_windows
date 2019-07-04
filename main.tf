@@ -192,7 +192,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
   }
   task_parameters {
     name   = "tags"
-    values = ["Key=Name,Value=SSM_Patching_Snapshot-${element(aws_ssm_maintenance_window.default.*.name, count.index)};Key=CreatedBy,Value=MaintenanceWindow"]
+    values = ["Key=Name,Value=SSM_Patching_Snapshot-${element(aws_ssm_maintenance_window.default.*.name, count.index)};Key=tag:CreatedBy,Value=MaintenanceWindow"]
   }
 
   lifecycle {
