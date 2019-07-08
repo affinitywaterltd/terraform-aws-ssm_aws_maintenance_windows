@@ -116,6 +116,10 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
     name   = "executionTimeout"
     values = ["300"]
   }
+  
+  lifecycle {
+    ignore_changes = ["task_parameters"]
+  }
 }
 
 resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
@@ -353,6 +357,10 @@ resource "aws_ssm_maintenance_window_task" "default_task_disble" {
   task_parameters {
     name   = "executionTimeout"
     values = ["300"]
+  }
+
+  lifecycle {
+    ignore_changes = ["task_parameters"]
   }
 }
 
