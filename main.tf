@@ -30,7 +30,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   name             = "start_stopped_instances"
-  description      = "Start instances that are stopped"
+  description      = "Start EC2 instances that are stopped"
   task_type        = "AUTOMATION"
   task_arn         = "AWL-StartStoppedInstances"
   priority         = 5
@@ -116,7 +116,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
     name   = "executionTimeout"
     values = ["300"]
   }
-  
+
   lifecycle {
     ignore_changes = ["task_parameters"]
   }
