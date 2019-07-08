@@ -25,7 +25,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
     values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
   }
 }
-/*
+
 resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
@@ -48,7 +48,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
-}*/
+}
 
 /*
 resource "aws_ssm_maintenance_window_task" "default_task_aws_tools_install" {
