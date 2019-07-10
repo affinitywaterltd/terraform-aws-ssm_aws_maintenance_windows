@@ -19,18 +19,17 @@ resource "aws_ssm_maintenance_window_target" "default" {
   description = "default"
   resource_type = "INSTANCE"
   
-
   targets {
     key    = "tag:ssmMaintenanceWindow"
     values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
   }
 }
-
+/*
 resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   name             = "start_stopped_instances"
-  description      = "Start EC2 instances that are stopped"
+  description      = "Start instances that are stopped"
   task_type        = "AUTOMATION"
   task_arn         = "AWL-StartStoppedInstances"
   priority         = 5
@@ -49,7 +48,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 }
-
+*/
 /*
 resource "aws_ssm_maintenance_window_task" "default_task_aws_tools_install" {
   count            = "${var.weeks}"
