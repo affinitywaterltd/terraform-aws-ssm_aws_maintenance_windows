@@ -34,7 +34,7 @@ variable "s3_bucket" {
 
 variable "mw_duration" {
   description = "Maintenance Window Duration"
-  default     = "4"
+  default     = "6"
 }
 
 variable "mw_cutoff" {
