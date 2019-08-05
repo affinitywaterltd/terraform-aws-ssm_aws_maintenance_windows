@@ -112,7 +112,16 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
         name   = "commands"
         values = ["Stop-Service -Name 'wuauserv'","Remove-Item -Path 'C:\\Windows\\SoftwareDistribution' -Recurse","Set-Service -Name 'wuauserv' -StartupType Manual","Start-Service -Name 'wuauserv'"]
       }
+
+      notification_config {
+        
+      }
     }
+  }
+  
+  task_parameters {
+    name   = "executionTimeout"
+    values = ["300"]
   }
 }
 
