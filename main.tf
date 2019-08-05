@@ -106,7 +106,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
       output_s3_bucket = "${var.s3_bucket}"
       output_s3_key_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
       service_role_arn = "${var.role}"
-      timeout_seconds  = 500
+      timeout_seconds  = 300
     
       parameter {
         name   = "commands"
@@ -133,28 +133,27 @@ resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
-  }
-
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
-  task_parameters {
-    name   = "action"
-    values = ["Install"]
-  }
-  task_parameters {
-    name   = "name"
-    values = ["AwsVssComponents"]
-  }
+  task_invocation_parameters {
+    run_command_parameters {
+      output_s3_bucket = "${var.s3_bucket}"
+      output_s3_key_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+      service_role_arn = "${var.role}"
+      timeout_seconds  = 300
 
-  lifecycle {
-    ignore_changes = ["task_parameters"]
+      parameter {
+        name   = "action"
+        values = ["Install"]
+      }
+      parameter {
+        name   = "name"
+        values = ["AwsVssComponents"]
+      }
+    }
   }
 }
 
@@ -170,36 +169,35 @@ resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
-  }
-
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
-  task_parameters {
-    name   = "ExcludeBootVolume"
-    values = ["False"]
-  }
-  task_parameters {
-    name   = "NoWriters"
-    values = ["False"]
-  }
-  task_parameters {
-    name   = "CopyOnly"
-    values = ["False"]
-  }
-  task_parameters {
-    name   = "tags"
-    values = ["Key=Name,Value=SSM_Patching_Snapshot-${element(aws_ssm_maintenance_window.default.*.name, count.index)};Key=tag:CreatedBy,Value=MaintenanceWindow"]
-  }
+  task_invocation_parameters {
+    run_command_parameters {
+      output_s3_bucket = "${var.s3_bucket}"
+      output_s3_key_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+      service_role_arn = "${var.role}"
+      timeout_seconds  = 3600
 
-  lifecycle {
-    ignore_changes = ["task_parameters"]
+      parameter {
+        name   = "ExcludeBootVolume"
+        values = ["False"]
+      }
+      parameter {
+        name   = "NoWriters"
+        values = ["False"]
+      }
+      parameter {
+        name   = "CopyOnly"
+        values = ["False"]
+      }
+      parameter {
+        name   = "tags"
+        values = ["Key=Name,Value=SSM_Patching_Snapshot-${element(aws_ssm_maintenance_window.default.*.name, count.index)};Key=tag:CreatedBy,Value=MaintenanceWindow"]
+      }
+    }
   }
 }
 
@@ -215,28 +213,27 @@ resource "aws_ssm_maintenance_window_task" "default_task_ena_update" {
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
-  }
-
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
-  task_parameters {
-    name   = "action"
-    values = ["Install"]
-  }
-  task_parameters {
-    name   = "name"
-    values = ["AwsEnaNetworkDriver"]
-  }
+  task_invocation_parameters {
+    run_command_parameters {
+      output_s3_bucket = "${var.s3_bucket}"
+      output_s3_key_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+      service_role_arn = "${var.role}"
+      timeout_seconds  = 300
 
-  lifecycle {
-    ignore_changes = ["task_parameters"]
+      parameter {
+        name   = "action"
+        values = ["Install"]
+      }
+      parameter {
+        name   = "name"
+        values = ["AwsEnaNetworkDriver"]
+      }
+    }
   }
 }
 
@@ -252,28 +249,27 @@ resource "aws_ssm_maintenance_window_task" "default_task_pvdriver_update" {
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
-  }
-
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
-  task_parameters {
-    name   = "action"
-    values = ["Install"]
-  }
-  task_parameters {
-    name   = "name"
-    values = ["AWSPVDriver"]
-  }
+  task_invocation_parameters {
+    run_command_parameters {
+      output_s3_bucket = "${var.s3_bucket}"
+      output_s3_key_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+      service_role_arn = "${var.role}"
+      timeout_seconds  = 300
 
-  lifecycle {
-    ignore_changes = ["task_parameters"]
+      parameter {
+        name   = "action"
+        values = ["Install"]
+      }
+      parameter {
+        name   = "name"
+        values = ["AWSPVDriver"]
+      }
+    }
   }
 }
 
@@ -289,42 +285,41 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
-  }
-
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
-  task_parameters {
-    name   = "Action"
-    values = ["Install"]
-  }
-  task_parameters {
-    name   = "AllowReboot"
-    values = ["True"]
-  }
-  task_parameters {
-    name   = "Categories"
-    values = ["CriticalUpdates,DefinitionUpdates,FeaturePacks,Microsoft,SecurityUpdates,Tools,UpdateRollups,Updates"]
-  }
-  task_parameters {
-    name   = "SeverityLevels"
-    values = ["Critical,Important,Low,Moderate,Unspecified"]
-  }
+  task_invocation_parameters {
+    run_command_parameters {
+      output_s3_bucket = "${var.s3_bucket}"
+      output_s3_key_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+      service_role_arn = "${var.role}"
+      timeout_seconds  = 10800
 
-  task_parameters {
-    name   = "PublishedDaysOld"
-    values = ["7"]
-  }
+      parameter {
+        name   = "Action"
+        values = ["Install"]
+      }
+      parameter {
+        name   = "AllowReboot"
+        values = ["True"]
+      }
+      parameter {
+        name   = "Categories"
+        values = ["CriticalUpdates,DefinitionUpdates,FeaturePacks,Microsoft,SecurityUpdates,Tools,UpdateRollups,Updates"]
+      }
+      parameter {
+        name   = "SeverityLevels"
+        values = ["Critical,Important,Low,Moderate,Unspecified"]
+      }
 
-  /*lifecycle {
-    ignore_changes = ["task_parameters"]
-  }*/
+      parameter {
+        name   = "PublishedDaysOld"
+        values = ["7"]
+      }
+    }
+  }
 }
 
 resource "aws_ssm_maintenance_window_task" "default_task_disble" {
@@ -339,28 +334,27 @@ resource "aws_ssm_maintenance_window_task" "default_task_disble" {
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
-  }
-
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
-  task_parameters {
-    name   = "commands"
-    values = ["Stop-Service -Name 'wuauserv'","Set-Service -Name 'wuauserv' -StartupType Disabled"]
-  }
-  task_parameters {
-    name   = "executionTimeout"
-    values = ["300"]
-  }
+  task_invocation_parameters {
+    run_command_parameters {
+      output_s3_bucket = "${var.s3_bucket}"
+      output_s3_key_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+      service_role_arn = "${var.role}"
+      timeout_seconds  = 300
 
-  lifecycle {
-    ignore_changes = ["task_parameters"]
+      parameter {
+        name   = "commands"
+        values = ["Stop-Service -Name 'wuauserv'","Set-Service -Name 'wuauserv' -StartupType Disabled"]
+      }
+      parameter {
+        name   = "executionTimeout"
+        values = ["300"]
+      }
+    }
   }
 }
 
@@ -376,19 +370,18 @@ resource "aws_ssm_maintenance_window_task" "default_task_email_notification" {
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
-  }
-
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
-  lifecycle {
-    ignore_changes = ["task_parameters"]
+  task_invocation_parameters {
+    run_command_parameters {
+      output_s3_bucket = "${var.s3_bucket}"
+      output_s3_key_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+      service_role_arn = "${var.role}"
+      timeout_seconds  = 300
+    }
   }
 }
 
@@ -404,112 +397,22 @@ resource "aws_ssm_maintenance_window_task" "default_task_ssmagent" {
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
-  }
-
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
-  task_parameters {
-    name   = "allowDowngrade"
-    values = ["false"]
-  }
+  task_invocation_parameters {
+    run_command_parameters {
+      output_s3_bucket = "${var.s3_bucket}"
+      output_s3_key_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+      service_role_arn = "${var.role}"
+      timeout_seconds  = 300
 
-  lifecycle {
-    ignore_changes = ["task_parameters"]
-  }
-}
-
-/*
-resource "aws_ssm_maintenance_window" "pre" {
-  count    = "${var.weeks}"
-  name = "${var.weeks > 1 ? "pre_${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "pre_${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"
-  schedule = "${var.weeks > 1 ? "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)" : "cron(00 ${var.hour} ? 1/3 ${var.day}#${var.week} *)"}"
-  duration = "2"
-  cutoff   = "${var.mw_cutoff}"
-  schedule_timezone = "Europe/London"
-}
-
-resource "aws_ssm_maintenance_window_target" "pre" {
-  count         = "${var.weeks}"
-  window_id     = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
-  
-  resource_type = "INSTANCE"
-  
-  targets {
-    key    = "tag:ssmMaintenanceWindow"
-    values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
+      parameter {
+        name   = "allowDowngrade"
+        values = ["false"]
+      }
+    }
   }
 }
-
-resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
-  count            = "${var.weeks}"
-  window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
-  name             = "enable_wsus"
-  description      = "Enable Windows Update Service"
-  task_type        = "RUN_COMMAND"
-  task_arn         = "AWS-RunPowerShellScript"
-  priority         = 10
-  service_role_arn = "${var.role}"
-  max_concurrency  = "${var.mw_concurrency}"
-  max_errors       = "${var.mw_error_rate}"
-
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
-  }
-
-  targets {
-    key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window_target.pre.*.id, count.index)}"]
-  }
-
-  task_parameters {
-    name   = "commands"
-    values = ["Set-Service -Name 'wuauserv' -StartupType Manual","Start-Service -Name 'wuauserv'"]
-  }
-  task_parameters {
-    name   = "executionTimeout"
-    values = ["300"]
-  }
-}
-
-resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
-  count            = "${var.weeks}"
-  window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
-  name             = "install_powershell_v3"
-  description      = "Installs Powershell v3 Update Package"
-  task_type        = "RUN_COMMAND"
-  task_arn         = "AWS-RunPowerShellScript"
-  priority         = 20
-  service_role_arn = "${var.role}"
-  max_concurrency  = "${var.mw_concurrency}"
-  max_errors       = "${var.mw_error_rate}"
-
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
-  }
-
-  targets {
-    key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window_target.pre.*.id, count.index)}"]
-  }
-
-  task_parameters {
-    name   = "commands"
-    values = ["wusa.exe  /i ${var.powershell_package_file} ${var.powershell_package_patameters}"]
-  }
-  task_parameters {
-    name   = "executionTimeout"
-    values = ["900"]
-  }
-}
-*/
