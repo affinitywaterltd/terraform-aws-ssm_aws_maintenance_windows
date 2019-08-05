@@ -117,10 +117,6 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
         name   = "executionTimeout"
         values = ["300"]
       }
-
-      notification_config {
-
-      }
     }
   }
 }
