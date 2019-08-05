@@ -104,7 +104,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   task_invocation_parameters {
     run_command_parameters {
       output_s3_bucket = "${var.s3_bucket}"
-      output_s3_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+      output_s3_key_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
       service_role_arn = "${var.role}"
       timeout_seconds  = 300
     
