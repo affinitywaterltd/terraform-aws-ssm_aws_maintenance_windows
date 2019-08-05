@@ -96,24 +96,23 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
-  }
-
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 
-  task_parameters {
-    name   = "commands"
-    values = ["Stop-Service -Name 'wuauserv'","Remove-Item -Path 'C:\\Windows\\SoftwareDistribution' -Recurse","Set-Service -Name 'wuauserv' -StartupType Manual","Start-Service -Name 'wuauserv'"]
-  }
-  task_parameters {
-    name   = "executionTimeout"
-    values = ["300"]
+  task_invocation_parameters {
+    run_command_parameters {
+      output_s3_bucket = "${var.s3_bucket}"
+      output_s3_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+      service_role_arn = "${var.role}"
+      timeout_seconds  = 300
+    }
+
+    parameter {
+      name   = "commands"
+      values = ["Stop-Service -Name 'wuauserv'","Remove-Item -Path 'C:\\Windows\\SoftwareDistribution' -Recurse","Set-Service -Name 'wuauserv' -StartupType Manual","Start-Service -Name 'wuauserv'"]
+    }
   }
 
   lifecycle {
