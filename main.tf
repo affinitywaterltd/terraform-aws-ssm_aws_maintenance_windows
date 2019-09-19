@@ -24,7 +24,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
     values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
   }
 }
-/*
+
 resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
@@ -37,10 +37,19 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
 
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+  task_invocation_parameters {
+    automation_parameters {
+      document_version = "$LATEST"
+
+      parameter {
+        name   = "TagValue"
+        values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
+      }
+      parameter {
+        name   = "AutomationAssumeRole"
+        values = ["${var.ssm_maintenance_window_start_instances}"]
+      }
+    }
   }
 
   targets {
@@ -48,40 +57,6 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 }
-*/
-/*
-resource "aws_ssm_maintenance_window_task" "default_task_aws_tools_install" {
-  count            = "${var.weeks}"
-  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "install_aws_tools_for_windows"
-  description      = "Install AWS Tools for Windows"
-  task_type        = "RUN_COMMAND"
-  task_arn         = "AWS-InstallApplication"
-  priority         = 5
-  service_role_arn = "${var.role}"
-  max_concurrency  = "${var.mw_concurrency}"
-  max_errors       = "${var.mw_error_rate}"
-
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
-  }
-
-  targets {
-    key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
-  }
-
-  task_parameters {
-    name   = "source"
-    values = ["${var.powershell_package_file_before}"]
-  }
-  task_parameters {
-    name   = "parameters"
-    values = ["${var.powershell_package_patameters_before}"]
-  } 
-}*/
 
 
 resource "aws_ssm_maintenance_window_task" "default_task_enable" {
