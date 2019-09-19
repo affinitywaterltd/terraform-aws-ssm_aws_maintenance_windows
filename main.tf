@@ -47,7 +47,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
       }
       parameter {
         name   = "AutomationAssumeRole"
-        values = ["${var.ssm_maintenance_window_start_instances}"]
+        values = ["${var.ssm_maintenance_window_start_instance_role}"]
       }
     }
   }

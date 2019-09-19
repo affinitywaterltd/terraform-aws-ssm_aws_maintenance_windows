@@ -99,7 +99,7 @@ variable "ssm_maintenance_window_create_image_role" {
   default     = "null"
 }
 
-variable "ssm_maintenance_window_start_instances" {
+variable "ssm_maintenance_window_start_instance_role" {
   description = "IAM role used by StartStoppedInstances automation task"
   default     = "null"
 }
