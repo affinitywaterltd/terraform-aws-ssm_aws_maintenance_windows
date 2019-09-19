@@ -25,6 +25,44 @@ resource "aws_ssm_maintenance_window_target" "default" {
   }
 }
 
+
+resource "aws_ssm_maintenance_window_task" "default_task_create_image" {
+  count            = "${var.weeks}"
+  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
+  name             = "create_ami_backup"
+  description      = "Take AMI of instance"
+  task_type        = "AUTOMATION"
+  task_arn         = "AWS-CreateImage"
+  priority         = 1
+  service_role_arn = "${var.role}"
+  max_concurrency  = "${var.mw_concurrency}"
+  max_errors       = "${var.mw_error_rate}"
+
+  task_invocation_parameters {
+    automation_parameters {
+      document_version = "$LATEST"
+
+      parameter {
+        name   = "InstanceId"
+        values = ["{{TARGET_ID}}"]
+      }
+      parameter {
+        name   = "NoReboot"
+        values = ["False"]
+      }
+      parameter {
+        name   = "AutomationAssumeRole"
+        values = ["${var.ssm_maintenance_window_create_image_role}"]
+      }
+    }
+  }
+
+  targets {
+    key    = "WindowTargetIds"
+    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
+  }
+}
+
 resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
@@ -131,7 +169,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
     }
   }
 }
-
+/*
 resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
@@ -175,7 +213,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
     }
   }
 }
-
+*/
 resource "aws_ssm_maintenance_window_task" "default_task_ena_update" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
