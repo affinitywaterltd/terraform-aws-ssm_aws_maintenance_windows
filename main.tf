@@ -1,34 +1,15 @@
-#
-#
-# Update Window
-#
-#
-resource "aws_ssm_maintenance_window" "default" {
+resource "aws_ssm_maintenance_window" "default_pre" {
   count    = "${var.weeks}"
-  name     = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"
+  name     = "pre_${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"
   schedule = "${var.weeks > 1 ? "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)" : "cron(00 ${var.hour} ? 1/3 ${var.day}#${var.week} *)"}"
   duration = "${var.mw_duration}"
   cutoff   = "${var.mw_cutoff}"
   schedule_timezone = "Europe/London"
 }
 
-resource "aws_ssm_maintenance_window_target" "default" {
-  count         = "${var.weeks}"
-  window_id     = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name = "default"
-  description = "default"
-  resource_type = "INSTANCE"
-  
-  targets {
-    key    = "tag:ssmMaintenanceWindow"
-    values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
-  }
-}
-
-
 resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances" {
   count            = "${var.weeks}"
-  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
+  window_id        = "${element(aws_ssm_maintenance_window.default_pre.*.id, count.index)}"
   name             = "start_stopped_instances"
   description      = "Start instances that are stopped"
   task_type        = "AUTOMATION"
@@ -55,9 +36,38 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
 
   targets {
     key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
+    values = ["${element(aws_ssm_maintenance_window_target.default_pre.*.id, count.index)}"]
   }
 }
+
+
+#
+#
+# Update Window
+#
+#
+resource "aws_ssm_maintenance_window" "default" {
+  count    = "${var.weeks}"
+  name     = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"
+  schedule = "${var.weeks > 1 ? "cron(30 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)" : "cron(30 ${var.hour} ? 1/3 ${var.day}#${var.week} *)"}"
+  duration = "${var.mw_duration}"
+  cutoff   = "${var.mw_cutoff}"
+  schedule_timezone = "Europe/London"
+}
+
+resource "aws_ssm_maintenance_window_target" "default" {
+  count         = "${var.weeks}"
+  window_id     = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
+  name = "default"
+  description = "default"
+  resource_type = "INSTANCE"
+  
+  targets {
+    key    = "tag:ssmMaintenanceWindow"
+    values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
+  }
+}
+
 
 
 resource "aws_ssm_maintenance_window_task" "default_task_create_image" {
