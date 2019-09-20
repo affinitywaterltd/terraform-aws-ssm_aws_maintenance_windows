@@ -7,6 +7,19 @@ resource "aws_ssm_maintenance_window" "default_pre" {
   schedule_timezone = "Europe/London"
 }
 
+resource "aws_ssm_maintenance_window_target" "default_pre" {
+  count         = "${var.weeks}"
+  window_id     = "${element(aws_ssm_maintenance_window.default_pre.*.id, count.index)}"
+  name = "default"
+  description = "default"
+  resource_type = "INSTANCE"
+  
+  targets {
+    key    = "tag:ssmMaintenanceWindow"
+    values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
+  }
+}
+
 resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default_pre.*.id, count.index)}"
@@ -36,7 +49,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
 
   targets {
     key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
+    values = ["${element(aws_ssm_maintenance_window_target.default_pre.*.id, count.index)}"]
   }
 }
 
