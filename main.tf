@@ -26,6 +26,40 @@ resource "aws_ssm_maintenance_window_target" "default" {
 }
 
 
+resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances" {
+  count            = "${var.weeks}"
+  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
+  name             = "start_stopped_instances"
+  description      = "Start instances that are stopped"
+  task_type        = "AUTOMATION"
+  task_arn         = "AWL-StartStoppedInstances"
+  priority         = 10
+  service_role_arn = "${var.role}"
+  max_concurrency  = "${var.mw_concurrency}"
+  max_errors       = "${var.mw_error_rate}"
+
+  task_invocation_parameters {
+    automation_parameters {
+      document_version = "$LATEST"
+
+      parameter {
+        name   = "TagValue"
+        values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
+      }
+      parameter {
+        name   = "AutomationAssumeRole"
+        values = ["${var.ssm_maintenance_window_start_instance_role}"]
+      }
+    }
+  }
+
+  targets {
+    key    = "WindowTargetIds"
+    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
+  }
+}
+
+
 resource "aws_ssm_maintenance_window_task" "default_task_create_image" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
@@ -33,7 +67,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_create_image" {
   description      = "Take AMI of instance"
   task_type        = "AUTOMATION"
   task_arn         = "AWS-CreateImage"
-  priority         = 1
+  priority         = 20
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -63,39 +97,6 @@ resource "aws_ssm_maintenance_window_task" "default_task_create_image" {
   }
 }
 
-resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances" {
-  count            = "${var.weeks}"
-  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "start_stopped_instances"
-  description      = "Start instances that are stopped"
-  task_type        = "AUTOMATION"
-  task_arn         = "AWL-StartStoppedInstances"
-  priority         = 5
-  service_role_arn = "${var.role}"
-  max_concurrency  = "${var.mw_concurrency}"
-  max_errors       = "${var.mw_error_rate}"
-
-  task_invocation_parameters {
-    automation_parameters {
-      document_version = "$LATEST"
-
-      parameter {
-        name   = "TagValue"
-        values = ["${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"]
-      }
-      parameter {
-        name   = "AutomationAssumeRole"
-        values = ["${var.ssm_maintenance_window_start_instance_role}"]
-      }
-    }
-  }
-
-  targets {
-    key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
-  }
-}
-
 
 resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   count            = "${var.weeks}"
@@ -104,7 +105,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   description      = "Reset Windows Update Service"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-RunPowerShellScript"
-  priority         = 10
+  priority         = 30
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -141,7 +142,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
   description      = "Installs AwsVssComponents for snapshotting"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-ConfigureAWSPackage"
-  priority         = 20
+  priority         = 40
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -221,7 +222,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_ena_update" {
   description      = "Installs AwsEnaNetworkDriver for snapshotting"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-ConfigureAWSPackage"
-  priority         = 40
+  priority         = 50
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -257,7 +258,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_pvdriver_update" {
   description      = "Installs AWSPVDriver for snapshotting"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-ConfigureAWSPackage"
-  priority         = 50
+  priority         = 60
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -293,7 +294,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
   description      = "Install Windows Updates"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWL-InstallWindowsUpdates"
-  priority         = 60
+  priority         = 70
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -342,7 +343,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_disble" {
   description      = "Reset Windows Update Service"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-RunPowerShellScript"
-  priority         = 70
+  priority         = 80
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -378,7 +379,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_email_notification" {
   description      = "Send email notification"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWL-SSMEmailNotification"
-  priority         = 80
+  priority         = 90
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -405,7 +406,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_ssmagent" {
   description      = "Update SSM Agent"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-UpdateSSMAgent"
-  priority         = 90
+  priority         = 100
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
