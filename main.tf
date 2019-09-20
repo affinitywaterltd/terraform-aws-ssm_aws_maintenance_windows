@@ -36,7 +36,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
 
   targets {
     key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window_target.default_pre.*.id, count.index)}"]
+    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
 }
 
