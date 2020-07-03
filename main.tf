@@ -1,4 +1,4 @@
-local {
+locals {
   week_offset = 1
 }
 
