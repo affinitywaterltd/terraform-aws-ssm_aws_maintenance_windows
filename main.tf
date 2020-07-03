@@ -1,7 +1,11 @@
+local {
+  week_offset = 1
+}
+
 resource "aws_ssm_maintenance_window" "default_pre" {
   count             = var.weeks
   name              = "pre_${var.weeks > 1 ? "${var.type}_week-${count.index + 1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"
-  schedule          = var.weeks > 1 ? "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index + 1} *)" : "cron(00 ${var.hour} ? 1/3 ${var.day}#${var.week} *)"
+  schedule          = var.weeks > 1 ? "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index + 1} *)" : "cron(00 ${var.hour} ? 1/3 ${var.day}#${var.week + local.week_offset} *)"
   duration          = var.mw_duration
   cutoff            = var.mw_cutoff
   schedule_timezone = "Europe/London"
@@ -64,7 +68,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_start_stopped_instances
 resource "aws_ssm_maintenance_window" "default" {
   count             = var.weeks
   name              = var.weeks > 1 ? "${var.type}_week-${count.index + 1}_${var.day}_${var.hour}00" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00"
-  schedule          = var.weeks > 1 ? "cron(30 ${var.hour} ? 1/3 ${var.day}#${count.index + 1} *)" : "cron(30 ${var.hour} ? 1/3 ${var.day}#${var.week} *)"
+  schedule          = var.weeks > 1 ? "cron(30 ${var.hour} ? 1/3 ${var.day}#${count.index + 1} *)" : "cron(30 ${var.hour} ? 1/3 ${var.day}#${var.week + local.week_offset} *)"
   duration          = var.mw_duration
   cutoff            = var.mw_cutoff
   schedule_timezone = "Europe/London"
