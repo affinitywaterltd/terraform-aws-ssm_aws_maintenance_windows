@@ -1,5 +1,5 @@
 locals {
-  week_offset = 1
+  week_offset = 0
 }
 
 resource "aws_ssm_maintenance_window" "default_pre" {
