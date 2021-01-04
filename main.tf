@@ -2,6 +2,16 @@ locals {
   week_offset = 0
   patches_days_old_week_offset = 2
   #patches_days_old = var.weeks > 1 ? "99" : "${((var.week - local.patches_days_old_week_offset) * 7) + var.day}"
+  days_of_week = {
+    "mon" = 1
+    "tue" = 2
+    "wed" = 3
+    "thu" = 4
+    "fri" = 5
+    "sat" = 6
+    "sun" = 7
+  }
+
 }
 
 resource "aws_ssm_maintenance_window" "default_pre" {
@@ -359,7 +369,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
 
       parameter {
         name   = "PublishedDaysOld"
-        values = [var.weeks > 1 ? "99" : "${((var.week - local.patches_days_old_week_offset) * 7) + var.day}"]
+        values = [var.weeks > 1 ? "99" : "${((var.week - local.patches_days_old_week_offset) * 7) + lookup(local.days_of_week, var.day, null)}"]
       }
     }
   }
