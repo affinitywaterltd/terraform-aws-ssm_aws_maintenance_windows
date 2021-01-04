@@ -105,7 +105,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_create_image" {
   name             = "create_ami_backup"
   description      = "Take AMI of instance"
   task_type        = "AUTOMATION"
-  task_arn         = "AWS-CreateImage"
+  task_arn         = "AWL-CreateLabelledImage"
   priority         = 20
   service_role_arn = var.role
   max_concurrency  = var.mw_concurrency
