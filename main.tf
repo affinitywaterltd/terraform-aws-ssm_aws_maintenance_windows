@@ -369,7 +369,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
 
       parameter {
         name   = "PublishedDaysOld"
-        values = [var.weeks > 1 ? "99" : "${((var.week - local.patches_days_old_week_offset) * 7) + lookup(local.days_of_week, var.day, null)}"]
+        values = [var.weeks > 1 ? "99" : "((${var.week} - ${local.patches_days_old_week_offset})) * 7) + lookup(${local.days_of_week}, ${var.day}, null)"]
       }
     }
   }
