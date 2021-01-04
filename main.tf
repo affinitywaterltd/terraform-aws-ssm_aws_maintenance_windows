@@ -1,5 +1,7 @@
 locals {
   week_offset = 0
+  patches_days_old_week_offset = 2
+  #patches_days_old = var.weeks > 1 ? "99" : "${((var.week - local.patches_days_old_week_offset) * 7) + var.day}"
 }
 
 resource "aws_ssm_maintenance_window" "default_pre" {
@@ -357,7 +359,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
 
       parameter {
         name   = "PublishedDaysOld"
-        values = ["7"]
+        values = [var.weeks > 1 ? "99" : "${((var.week - local.patches_days_old_week_offset) * 7) + var.day}"]
       }
     }
   }
