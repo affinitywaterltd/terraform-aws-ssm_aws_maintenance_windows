@@ -121,7 +121,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_create_image" {
       }
       parameter {
         name   = "NoReboot"
-        values = ["false"]
+        values = ["true"]
       }
       parameter {
         name   = "AutomationAssumeRole"
